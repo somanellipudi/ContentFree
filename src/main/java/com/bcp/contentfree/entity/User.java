@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-public class User extends BaseEntity{
+public class User extends BaseEntity {
 
     @NonNull
     @DynamoDBHashKey(attributeName = "userName")

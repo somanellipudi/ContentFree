@@ -8,7 +8,6 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.logging.Level;
 
 @Repository
@@ -27,15 +26,14 @@ public class UserRepository {
         try {
             mapper.save(user);
         } catch (ConditionalCheckFailedException e) {
-            xLogger.error(Level.SEVERE +": error is {}", e.getCause());
+            xLogger.error(Level.SEVERE + ": error is {}", e.getCause());
         }
     }
 
-    public User findAUser(String userName){
-        xLogger.info( Level.INFO +" : querying the db to find the user with userName : {}", userName);
+    public User findAUser(String userName) {
+        xLogger.info(Level.INFO + " : querying the db to find the user with userName : {}", userName);
         return mapper.load(User.class, userName);
     }
-
 
 
 }

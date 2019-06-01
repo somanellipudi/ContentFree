@@ -1,9 +1,7 @@
 package com.bcp.contentfree.repositories;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.bcp.contentfree.entity.Project;
-import com.bcp.contentfree.entity.User;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +17,14 @@ public class ProjectRepository {
 
     private XLogger xLogger = XLoggerFactory.getXLogger(getClass());
 
-    public Project findAProject(String projectName){
-        xLogger.info( Level.INFO +" : querying the db to find the user with projectName : {}", projectName);
+    public Project findAProject(String projectName) {
+        xLogger.info(Level.INFO + " : querying the db to find the user with projectName : {}", projectName);
         return mapper.load(Project.class, projectName);
     }
 
-    public void insertProject(Project project){
+    public void insertProject(Project project) {
         xLogger.info(Level.INFO + " inserting the project into the database, with ProjectName : {} ", project.getProjectName());
-         mapper.save(project);
+        mapper.save(project);
     }
 
 
