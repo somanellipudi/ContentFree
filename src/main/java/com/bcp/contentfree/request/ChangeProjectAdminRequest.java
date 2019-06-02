@@ -1,7 +1,9 @@
 package com.bcp.contentfree.request;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Setter
@@ -9,8 +11,14 @@ import lombok.Setter;
 @ApiModel
 public class ChangeProjectAdminRequest {
 
+    @NonNull
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String projectName;
-    private String oldUserName;
+
+    @NonNull
+    private String oldAdminUserName;
+    @NonNull
     private String oldUserPassword;
-    private String newUserName;
+    @NonNull
+    private String newAdminUserName;
 }

@@ -5,6 +5,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @DynamoDBTable(tableName = "ContentFreeProject")
@@ -22,7 +23,7 @@ public class Project extends BaseEntity {
     @NonNull
     private String projectAdminUserName;
 
-    private List<String> projectUserNames;
+    private Set<String> projectUserNames;
 
 
 }

@@ -4,7 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.*;
 
-import java.util.List;
+import java.util.Set;
 
 @Data
 @DynamoDBTable(tableName = "ContentFreeUser")
@@ -25,9 +25,9 @@ public class User extends BaseEntity {
     @NonNull
     private String emailId;
 
-    private List<String> adminProjectNames;
+    private Set<String> adminProjectNames;
 
-    private List<String> accessProjectNames;
+    private Set<String> accessProjectNames;
 
 
 }
