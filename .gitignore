@@ -31,3 +31,4 @@ HELP.md
 mvnw
 mvnw.cmd
 *.log
+logs/contentfree.log.2019-06-02.0.gz
