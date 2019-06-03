@@ -12,7 +12,7 @@ steps:
   args: ['gcloud', 'projects', 'list']
 # Simple sanity check: invoke maven to confirm that it was installed correctly.
 - name: 'gcr.io/$PROJECT_ID/gcloud-maven'
-  args: ['appengine', 'deploy', '--image-url=gcr.io/$PROJECT_ID/gcloud-maven']
+  args: ['appengine', 'deploy', '--image-url=gcr.io/$PROJECT_ID/gcloud-maven:latest']
 
 images: ['gcr.io/$PROJECT_ID/gcloud-maven']
 
