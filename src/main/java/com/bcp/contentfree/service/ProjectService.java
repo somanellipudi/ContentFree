@@ -7,6 +7,7 @@ import com.bcp.contentfree.repositories.ProjectRepository;
 import com.bcp.contentfree.repositories.UserRepository;
 import com.bcp.contentfree.request.ChangeProjectAdminRequest;
 import com.bcp.contentfree.request.ProjectAccessRequest;
+import com.bcp.contentfree.request.RevokeProjectAccessRequest;
 import com.bcp.contentfree.response.BaseResponse;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
@@ -136,6 +137,13 @@ public class ProjectService {
             projectRepository.updateProject(project);
             User newAdminUser = userRepository.findAUser(changeProjectAdminRequest.getNewAdminUserName());
             makeUserAnAdminToProjectWithoutPassword(newAdminUser, project);
+            if(project.getProjectUserNames() != null){
+                for(String projectName : project.getProjectUserNames()){
+                    if(projectName.equals(project.getProjectName())){
+                        revokeProjectAccessService(new RevokeProjectAccessRequest(newAdminUser.getUserName(), projectName));
+                    }
+                }
+            }
             xLogger.info(Level.INFO + " : project {} new Admin is {}", project.getProjectName(), project.getProjectAdminUserName());
             baseResponse.setResponseCode("0");
             baseResponse.setResponseMessage("Admin changed");
@@ -185,13 +193,22 @@ public class ProjectService {
             return false;
         }
         if(role.equals(ACCESS)){
-            for(String userName : project.getProjectUserNames()){
-                if(user.getUserName().equals(userName)){
-                    xLogger.error(Level.WARNING + " : User already have access");
-                    return false;
+            if(project.getProjectUserNames() != null){
+                for(String userName : project.getProjectUserNames()){
+                    if(user.getUserName().equals(userName)){
+                        xLogger.error(Level.WARNING + " : User already have access");
+                        return false;
+                    }
                 }
+
+                project.getProjectUserNames().add(user.getUserName());
+            } else{
+                Set<String> projectUserNames = new HashSet<>();
+                projectUserNames.add(user.getUserName());
+                project.setProjectUserNames(projectUserNames);
             }
-            project.getProjectUserNames().add(user.getUserName());
+
+
         } else if(role.equals(ADMIN)){
             project.setProjectAdminUserName(user.getUserName());
         }
@@ -263,5 +280,82 @@ public class ProjectService {
        baseResponse.setResponseCode("0");
        baseResponse.setResponseMessage("users added to project");
        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Object> revokeProjectAccessService(RevokeProjectAccessRequest revokeProjectAccessRequest) {
+
+        xLogger.info(Level.INFO + " : revoke project access controller for ProjectName {} for UserName {}", revokeProjectAccessRequest.getProjectName(), revokeProjectAccessRequest.getUserName());
+
+        Project project = projectRepository.findAProject(revokeProjectAccessRequest.getProjectName());
+
+        BaseResponse baseResponse = new BaseResponse();
+        if(project == null){
+            xLogger.error(Level.WARNING +" : project doesnt exists with the ProjectName {}", revokeProjectAccessRequest.getProjectName());
+            baseResponse.setResponseCode("93");
+            baseResponse.setResponseMessage("project not found");
+            return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
+        }
+        User user = userRepository.findAUser(revokeProjectAccessRequest.getUserName());
+
+        if(user == null){
+            xLogger.error(Level.WARNING + ": No user Found with the UserName : {}", revokeProjectAccessRequest.getUserName());
+            baseResponse.setResponseMessage("No user Found");
+            baseResponse.setResponseCode("98");
+            return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
+        }
+
+        if(user.getAccessProjectNames() != null){
+
+            for(String projectName : user.getAccessProjectNames()){
+                if(projectName.equals(revokeProjectAccessRequest.getProjectName())){
+                    xLogger.info(Level.INFO + " : revoking the access to the userName : {}, ProjectName : {}", user.getUserName(), project.getProjectName());
+                    project.getProjectUserNames().remove(user.getUserName());
+                    projectRepository.updateProject(project);
+
+
+                    baseResponse.setResponseCode("success");
+                    baseResponse.setResponseCode("0");
+                    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+                }
+            }
+
+
+            xLogger.error(Level.WARNING + ": User don't have access to that project : {}", revokeProjectAccessRequest.getUserName());
+            baseResponse.setResponseMessage("No Access Found");
+            baseResponse.setResponseCode("88");
+            return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
+
+
+        }
+
+        xLogger.info(Level.INFO + " : userName dont have access to any Project ", user.getUserName());
+        baseResponse.setResponseMessage("No Access any Project");
+        baseResponse.setResponseCode("87");
+        return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
+
+    }
+
+    public ResponseEntity<Object> getProjectService(String projectName) {
+
+        xLogger.info(Level.INFO + " find project with projectName : {}", projectName);
+        Project project = projectRepository.findAProject(projectName);
+        BaseResponse baseResponse = new BaseResponse();
+
+        if(project == null){
+            xLogger.error(Level.WARNING +" : project doesnt exists with the ProjectName  {}", projectName);
+            baseResponse.setResponseCode("93");
+            baseResponse.setResponseMessage("project not found");
+            return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
+        }else {
+            return new ResponseEntity<>(project, HttpStatus.OK);
+        }
+
+    }
+
+    public ResponseEntity<Object> getAllProjectsService() {
+
+        xLogger.info(Level.INFO + " : getting all the projects");
+        List<Project> projects = projectRepository.findAllProjects();
+        return new ResponseEntity<>(projects, HttpStatus.OK);
     }
 }

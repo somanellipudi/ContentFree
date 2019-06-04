@@ -2,22 +2,18 @@ package com.bcp.contentfree.request;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
+@ApiModel
 @Setter
 @Getter
-@ApiModel
-public class ProjectAccessRequest {
-
-    private String adminUser;
+public class DeleteUserRequest {
 
     @NotNull
-    private String projectName;
+    private String userName;
 
     @NotNull
-    private Set<String> userNameList;
+    private String password;
 }

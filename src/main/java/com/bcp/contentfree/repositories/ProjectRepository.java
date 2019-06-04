@@ -1,6 +1,7 @@
 package com.bcp.contentfree.repositories;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.bcp.contentfree.entity.Project;
 import org.slf4j.ext.XLogger;
@@ -8,6 +9,8 @@ import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 @Repository
@@ -34,6 +37,11 @@ public class ProjectRepository {
         } catch (ConditionalCheckFailedException e) {
             xLogger.error(Level.SEVERE + ": error is {}", e.getCause());
         }
+    }
+
+    public List<Project> findAllProjects(){
+        DynamoDBScanExpression dynamoDBScanExpression = new DynamoDBScanExpression();
+        return mapper.scan(Project.class, dynamoDBScanExpression);
     }
 
 

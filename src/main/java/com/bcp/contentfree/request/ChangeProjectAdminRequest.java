@@ -6,19 +6,21 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 @Setter
 @Getter
 @ApiModel
 public class ChangeProjectAdminRequest {
 
-    @NonNull
+    @NotNull
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String projectName;
 
-    @NonNull
+    @NotNull
     private String oldAdminUserName;
-    @NonNull
+    @NotNull
     private String oldUserPassword;
-    @NonNull
+    @NotNull
     private String newAdminUserName;
 }

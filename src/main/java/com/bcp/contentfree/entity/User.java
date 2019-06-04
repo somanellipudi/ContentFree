@@ -4,6 +4,7 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
@@ -13,16 +14,16 @@ import java.util.Set;
 @NoArgsConstructor
 public class User extends BaseEntity {
 
-    @NonNull
+    @NotNull
     @DynamoDBHashKey(attributeName = "userName")
     private String userName;
 
-    @NonNull
+    @NotNull
     private String password;
 
     private String phoneNumber;
 
-    @NonNull
+    @NotNull
     private String emailId;
 
     private Set<String> adminProjectNames;
