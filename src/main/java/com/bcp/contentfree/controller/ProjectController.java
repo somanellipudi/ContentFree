@@ -26,13 +26,10 @@ public class ProjectController {
 
 
     @GetMapping("/getAllProjects")
-    public ResponseEntity<Object> getAllProjects(){
+    public ResponseEntity<Object> getAllProjects() {
         xLogger.info(Level.INFO + " : getting all the projects");
         return projectService.getAllProjectsService();
     }
-
-
-
 
     @PostMapping("/addProject")
     public ResponseEntity<Object> addProject(@RequestBody @Valid Project project) {
@@ -41,27 +38,26 @@ public class ProjectController {
     }
 
     @GetMapping("/getProject/{projectName}")
-    public ResponseEntity<Object> getProject(@PathVariable String projectName){
+    public ResponseEntity<Object> getProject(@PathVariable String projectName) {
         xLogger.info(Level.INFO + " entered get Project for projectName : {}", projectName);
         return projectService.getProjectService(projectName);
     }
 
-
     @PutMapping("/changeProjectAdmin")
-    public ResponseEntity<Object> changeProjectAdmin(@RequestBody @Valid  ChangeProjectAdminRequest changeProjectAdminRequest){
-        xLogger.info(Level.INFO +" : entered change Project Admin for the ProjectName {}", changeProjectAdminRequest.getProjectName());
+    public ResponseEntity<Object> changeProjectAdmin(@RequestBody @Valid ChangeProjectAdminRequest changeProjectAdminRequest) {
+        xLogger.info(Level.INFO + " : entered change Project Admin for the ProjectName {}", changeProjectAdminRequest.getProjectName());
         return projectService.changeProjectAdminService(changeProjectAdminRequest);
     }
 
 
     @PutMapping("/giveProjectAccess")
-    public ResponseEntity<Object> giveProjectAccess(@RequestBody @Valid ProjectAccessRequest projectAccessRequest){
+    public ResponseEntity<Object> giveProjectAccess(@RequestBody @Valid ProjectAccessRequest projectAccessRequest) {
         xLogger.info(Level.INFO + " : Entered project Access giving controller for the ProjectName : {} ", projectAccessRequest.getProjectName());
         return projectService.giveProjectAccessService(projectAccessRequest);
     }
 
     @PutMapping("/revokeProjectAccess")
-    public ResponseEntity<Object> revokeProjectAccess(@RequestBody @Valid RevokeProjectAccessRequest revokeProjectAccessRequest){
+    public ResponseEntity<Object> revokeProjectAccess(@RequestBody @Valid RevokeProjectAccessRequest revokeProjectAccessRequest) {
         xLogger.info(Level.INFO + " : Entered Project revoke controller for the ProjectName : {} and UserName : {}", revokeProjectAccessRequest.getProjectName(), revokeProjectAccessRequest.getUserName());
         return projectService.revokeProjectAccessService(revokeProjectAccessRequest);
     }

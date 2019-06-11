@@ -24,13 +24,13 @@ public class UserController {
     private XLogger xLogger = XLoggerFactory.getXLogger(getClass());
 
     @GetMapping("/getAllUsers")
-    public ResponseEntity<Object> getAllUsers(){
+    public ResponseEntity<Object> getAllUsers() {
         xLogger.info(Level.INFO + " : getting all the users");
         return userService.getAllUsers();
     }
 
     @GetMapping("/getAllProjectsUserAccess")
-    public ResponseEntity<Object> getAllProjectsUserAccess(String userName){
+    public ResponseEntity<Object> getAllProjectsUserAccess(String userName) {
         xLogger.info(Level.INFO + " : getting all the project of the userName : {} ", userName);
         return userService.getAllProjectsUserAccess(userName);
     }
@@ -54,13 +54,13 @@ public class UserController {
     }
 
     @PutMapping("/changePassword")
-    public ResponseEntity<Object> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity<Object> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
         xLogger.info(Level.INFO + " : change password controller for UserName : {}", changePasswordRequest.getUserName());
         return userService.changeUserPasswordService(changePasswordRequest);
     }
 
     @DeleteMapping("/deleteUser")
-    public ResponseEntity<Object> deleteUser(@RequestBody @Valid DeleteUserRequest deleteUserRequest){
+    public ResponseEntity<Object> deleteUser(@RequestBody @Valid DeleteUserRequest deleteUserRequest) {
         xLogger.info(Level.INFO + " : entered delete User for UserName : {}", deleteUserRequest.getUserName());
         return userService.deleteUser(deleteUserRequest);
     }

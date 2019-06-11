@@ -99,47 +99,44 @@ public class ProjectService {
     }
 
     /**
-     *
      * @param changeProjectAdminRequest
      * @return
      */
-    public ResponseEntity<Object> changeProjectAdminService(ChangeProjectAdminRequest changeProjectAdminRequest){
+    public ResponseEntity<Object> changeProjectAdminService(ChangeProjectAdminRequest changeProjectAdminRequest) {
         xLogger.info(Level.INFO + " : checking if project name : {} exists and its admin", changeProjectAdminRequest.getProjectName());
         Project project = projectRepository.findAProject(changeProjectAdminRequest.getProjectName());
 
         BaseResponse baseResponse = new BaseResponse();
 
-        if(project == null){
-            xLogger.error(Level.WARNING +" : project doesnt exists with the name {}", changeProjectAdminRequest.getProjectName());
+        if (project == null) {
+            xLogger.error(Level.WARNING + " : project doesnt exists with the name {}", changeProjectAdminRequest.getProjectName());
             baseResponse.setResponseCode("93");
             baseResponse.setResponseMessage("project not found");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        } else if(!changeProjectAdminRequest.getOldAdminUserName().equals(project.getProjectAdminUserName())){
+        } else if (!changeProjectAdminRequest.getOldAdminUserName().equals(project.getProjectAdminUserName())) {
             xLogger.error(Level.WARNING + ": current admin of the project is different than {}", changeProjectAdminRequest.getOldAdminUserName());
             baseResponse.setResponseCode("92");
             baseResponse.setResponseMessage("Wrong Admin User");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        } else if(!userRepository.findAUser(project.getProjectAdminUserName()).getPassword().equals(changeProjectAdminRequest.getOldUserPassword())){
+        } else if (!userRepository.findAUser(project.getProjectAdminUserName()).getPassword().equals(changeProjectAdminRequest.getOldUserPassword())) {
             xLogger.info(Level.WARNING + " : password of the admin {} is not matching", changeProjectAdminRequest.getOldAdminUserName());
             baseResponse.setResponseCode("91");
             baseResponse.setResponseMessage("password mismatch");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        } else if(userRepository.findAUser(changeProjectAdminRequest.getNewAdminUserName()) == null){
+        } else if (userRepository.findAUser(changeProjectAdminRequest.getNewAdminUserName()) == null) {
             xLogger.error(Level.WARNING + " : new UserName {} doesnt exists", changeProjectAdminRequest.getNewAdminUserName());
             baseResponse.setResponseCode("90");
             baseResponse.setResponseMessage("New Admin User Not Found");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        }
-
-        else{
+        } else {
             xLogger.info(Level.INFO + " : changing the project {} Admin User from {} ", changeProjectAdminRequest.getProjectName(), changeProjectAdminRequest.getOldAdminUserName());
             project.setProjectAdminUserName(changeProjectAdminRequest.getNewAdminUserName());
             projectRepository.updateProject(project);
             User newAdminUser = userRepository.findAUser(changeProjectAdminRequest.getNewAdminUserName());
             makeUserAnAdminToProjectWithoutPassword(newAdminUser, project);
-            if(project.getProjectUserNames() != null){
-                for(String projectName : project.getProjectUserNames()){
-                    if(projectName.equals(project.getProjectName())){
+            if (project.getProjectUserNames() != null) {
+                for (String projectName : project.getProjectUserNames()) {
+                    if (projectName.equals(project.getProjectName())) {
                         revokeProjectAccessService(new RevokeProjectAccessRequest(newAdminUser.getUserName(), projectName));
                     }
                 }
@@ -153,7 +150,7 @@ public class ProjectService {
 
     }
 
-    private void makeUserAnAdminToProjectWithoutPassword(User user, Project project){
+    private void makeUserAnAdminToProjectWithoutPassword(User user, Project project) {
         Set<String> adminProjects = user.getAdminProjectNames();
         if (adminProjects != null) {
             xLogger.info(Level.INFO + " : admin projects for the admin user {} are {}", project.getProjectAdminUserName(), adminProjects);
@@ -170,12 +167,12 @@ public class ProjectService {
 
     }
 
-    private List<String> checkUsersExists(Set<String> userNames){
+    private List<String> checkUsersExists(Set<String> userNames) {
         xLogger.info(Level.INFO + " : checking if the users present");
         List<String> userNotExistsList = new ArrayList<>();
-        for(String userName : userNames){
+        for (String userName : userNames) {
             User user = userRepository.findAUser(userName);
-            if(user == null){
+            if (user == null) {
                 userNotExistsList.add(userName);
             }
         }
@@ -183,33 +180,33 @@ public class ProjectService {
     }
 
 
-    public boolean addUserToProject(User user, Project project, String role){
-        if(project == null){
-            xLogger.error(Level.WARNING +" : project doesnt exists");
+    public boolean addUserToProject(User user, Project project, String role) {
+        if (project == null) {
+            xLogger.error(Level.WARNING + " : project doesnt exists");
             return false;
         }
-        if(user == null){
+        if (user == null) {
             xLogger.error(Level.WARNING + " : user doesnt exists");
             return false;
         }
-        if(role.equals(ACCESS)){
-            if(project.getProjectUserNames() != null){
-                for(String userName : project.getProjectUserNames()){
-                    if(user.getUserName().equals(userName)){
+        if (role.equals(ACCESS)) {
+            if (project.getProjectUserNames() != null) {
+                for (String userName : project.getProjectUserNames()) {
+                    if (user.getUserName().equals(userName)) {
                         xLogger.error(Level.WARNING + " : User already have access");
                         return false;
                     }
                 }
 
                 project.getProjectUserNames().add(user.getUserName());
-            } else{
+            } else {
                 Set<String> projectUserNames = new HashSet<>();
                 projectUserNames.add(user.getUserName());
                 project.setProjectUserNames(projectUserNames);
             }
 
 
-        } else if(role.equals(ADMIN)){
+        } else if (role.equals(ADMIN)) {
             project.setProjectAdminUserName(user.getUserName());
         }
 
@@ -218,68 +215,67 @@ public class ProjectService {
     }
 
 
-
     public ResponseEntity<Object> giveProjectAccessService(ProjectAccessRequest projectAccessRequest) {
         xLogger.info(Level.INFO + " : Giving Access to Project {} to the userNames {}", projectAccessRequest.getProjectName(), projectAccessRequest.getUserNameList());
 
         Project project = projectRepository.findAProject(projectAccessRequest.getProjectName());
         BaseResponse baseResponse = new BaseResponse();
-        if(project == null){
-            xLogger.error(Level.WARNING +" : project doesnt exists with the name {}", projectAccessRequest.getProjectName());
+        if (project == null) {
+            xLogger.error(Level.WARNING + " : project doesnt exists with the name {}", projectAccessRequest.getProjectName());
             baseResponse.setResponseCode("93");
             baseResponse.setResponseMessage("project not found");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         List<String> notFoundUsers = checkUsersExists(projectAccessRequest.getUserNameList());
-       if(notFoundUsers == null){
-           xLogger.error(Level.WARNING + " : access user not found userName : {}", notFoundUsers);
-           baseResponse.setResponseCode("95");
-           baseResponse.setResponseMessage("Access User Not Found");
-           return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-       }
+        if (notFoundUsers == null) {
+            xLogger.error(Level.WARNING + " : access user not found userName : {}", notFoundUsers);
+            baseResponse.setResponseCode("95");
+            baseResponse.setResponseMessage("Access User Not Found");
+            return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
+        }
 
-        for(String userName : projectAccessRequest.getUserNameList()){
-            if(project.getProjectAdminUserName().equals(userName)){
+        for (String userName : projectAccessRequest.getUserNameList()) {
+            if (project.getProjectAdminUserName().equals(userName)) {
                 baseResponse.setResponseCode("94");
                 baseResponse.setResponseMessage("Admin User is also added in Access user");
                 return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
             }
         }
 
-       Set<String> projectUsers =  project.getProjectUserNames();
+        Set<String> projectUsers = project.getProjectUserNames();
 
-       if(projectUsers != null){
-           xLogger.info(Level.INFO + " : projectName {} already some users, adding these {} users also", project.getProjectName(), projectAccessRequest.getUserNameList());
-           projectUsers.addAll(projectAccessRequest.getUserNameList());
-       } else{
+        if (projectUsers != null) {
+            xLogger.info(Level.INFO + " : projectName {} already some users, adding these {} users also", project.getProjectName(), projectAccessRequest.getUserNameList());
+            projectUsers.addAll(projectAccessRequest.getUserNameList());
+        } else {
 
-           xLogger.info(Level.INFO + " : projectName {} doesnt have any user to it, now adding {} to it", project.getProjectName(), projectAccessRequest.getUserNameList());
-           project.setProjectUserNames(projectAccessRequest.getUserNameList());
-       }
+            xLogger.info(Level.INFO + " : projectName {} doesnt have any user to it, now adding {} to it", project.getProjectName(), projectAccessRequest.getUserNameList());
+            project.setProjectUserNames(projectAccessRequest.getUserNameList());
+        }
 
-       projectRepository.updateProject(project);
-       for(String userName : projectAccessRequest.getUserNameList()){
-           User user =  userRepository.findAUser(userName);
-           if(user.getAccessProjectNames() != null){
+        projectRepository.updateProject(project);
+        for (String userName : projectAccessRequest.getUserNameList()) {
+            User user = userRepository.findAUser(userName);
+            if (user.getAccessProjectNames() != null) {
 
-               for(String projectName : user.getAccessProjectNames()){
-                   if(projectName.equals(projectAccessRequest.getProjectName())){
-                       user.getAccessProjectNames().remove(projectAccessRequest.getProjectName());
-                   }
-               }
-               user.getAccessProjectNames().add(projectAccessRequest.getProjectName());
-           } else{
-               Set<String> projectList = new HashSet<>();
-               projectList.add(projectAccessRequest.getProjectName());
-               user.setAccessProjectNames(projectList);
-           }
-           xLogger.info(Level.INFO + " : updating the userName {}", user.getUserName());
-           userRepository.updateUser(user);
-       }
+                for (String projectName : user.getAccessProjectNames()) {
+                    if (projectName.equals(projectAccessRequest.getProjectName())) {
+                        user.getAccessProjectNames().remove(projectAccessRequest.getProjectName());
+                    }
+                }
+                user.getAccessProjectNames().add(projectAccessRequest.getProjectName());
+            } else {
+                Set<String> projectList = new HashSet<>();
+                projectList.add(projectAccessRequest.getProjectName());
+                user.setAccessProjectNames(projectList);
+            }
+            xLogger.info(Level.INFO + " : updating the userName {}", user.getUserName());
+            userRepository.updateUser(user);
+        }
 
-       baseResponse.setResponseCode("0");
-       baseResponse.setResponseMessage("users added to project");
-       return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+        baseResponse.setResponseCode("0");
+        baseResponse.setResponseMessage("users added to project");
+        return new ResponseEntity<>(baseResponse, HttpStatus.OK);
     }
 
     public ResponseEntity<Object> revokeProjectAccessService(RevokeProjectAccessRequest revokeProjectAccessRequest) {
@@ -289,25 +285,25 @@ public class ProjectService {
         Project project = projectRepository.findAProject(revokeProjectAccessRequest.getProjectName());
 
         BaseResponse baseResponse = new BaseResponse();
-        if(project == null){
-            xLogger.error(Level.WARNING +" : project doesnt exists with the ProjectName {}", revokeProjectAccessRequest.getProjectName());
+        if (project == null) {
+            xLogger.error(Level.WARNING + " : project doesnt exists with the ProjectName {}", revokeProjectAccessRequest.getProjectName());
             baseResponse.setResponseCode("93");
             baseResponse.setResponseMessage("project not found");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         User user = userRepository.findAUser(revokeProjectAccessRequest.getUserName());
 
-        if(user == null){
+        if (user == null) {
             xLogger.error(Level.WARNING + ": No user Found with the UserName : {}", revokeProjectAccessRequest.getUserName());
             baseResponse.setResponseMessage("No user Found");
             baseResponse.setResponseCode("98");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
 
-        if(user.getAccessProjectNames() != null){
+        if (user.getAccessProjectNames() != null) {
 
-            for(String projectName : user.getAccessProjectNames()){
-                if(projectName.equals(revokeProjectAccessRequest.getProjectName())){
+            for (String projectName : user.getAccessProjectNames()) {
+                if (projectName.equals(revokeProjectAccessRequest.getProjectName())) {
                     xLogger.info(Level.INFO + " : revoking the access to the userName : {}, ProjectName : {}", user.getUserName(), project.getProjectName());
                     project.getProjectUserNames().remove(user.getUserName());
                     projectRepository.updateProject(project);
@@ -341,12 +337,12 @@ public class ProjectService {
         Project project = projectRepository.findAProject(projectName);
         BaseResponse baseResponse = new BaseResponse();
 
-        if(project == null){
-            xLogger.error(Level.WARNING +" : project doesnt exists with the ProjectName  {}", projectName);
+        if (project == null) {
+            xLogger.error(Level.WARNING + " : project doesnt exists with the ProjectName  {}", projectName);
             baseResponse.setResponseCode("93");
             baseResponse.setResponseMessage("project not found");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        }else {
+        } else {
             return new ResponseEntity<>(project, HttpStatus.OK);
         }
 

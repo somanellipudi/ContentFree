@@ -37,12 +37,12 @@ public class UserRepository {
         return mapper.load(User.class, userName);
     }
 
-    public void deleteUser(User user){
-        xLogger.info(Level.INFO +  " deleting the userName : {}", user.getUserName());
-         mapper.delete(user);
+    public void deleteUser(User user) {
+        xLogger.info(Level.INFO + " deleting the userName : {}", user.getUserName());
+        mapper.delete(user);
     }
 
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         DynamoDBScanExpression dynamoDBScanExpression = new DynamoDBScanExpression();
         return mapper.scan(User.class, dynamoDBScanExpression);
     }

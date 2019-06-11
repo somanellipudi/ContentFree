@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 @Repository
@@ -39,7 +38,7 @@ public class ProjectRepository {
         }
     }
 
-    public List<Project> findAllProjects(){
+    public List<Project> findAllProjects() {
         DynamoDBScanExpression dynamoDBScanExpression = new DynamoDBScanExpression();
         return mapper.scan(Project.class, dynamoDBScanExpression);
     }

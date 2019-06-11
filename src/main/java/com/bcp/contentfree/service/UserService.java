@@ -8,7 +8,6 @@ import com.bcp.contentfree.request.ChangePasswordRequest;
 import com.bcp.contentfree.request.DeleteUserRequest;
 import com.bcp.contentfree.request.RevokeProjectAccessRequest;
 import com.bcp.contentfree.response.BaseResponse;
-import io.swagger.annotations.ApiModel;
 import org.slf4j.ext.XLogger;
 import org.slf4j.ext.XLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,21 +51,21 @@ public class UserService {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    public ResponseEntity<Object> changeUserPasswordService(ChangePasswordRequest changePasswordRequest){
+    public ResponseEntity<Object> changeUserPasswordService(ChangePasswordRequest changePasswordRequest) {
         User user = userRepository.findAUser(changePasswordRequest.getUserName());
-        if(user == null){
+        if (user == null) {
             xLogger.error(Level.WARNING + " : No user Found with the UserName for changepassword, {}", changePasswordRequest.getUserName());
             BaseResponse baseResponse = new BaseResponse();
             baseResponse.setResponseMessage("No user Found");
             baseResponse.setResponseCode("98");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        } else if(!user.getPassword().equals(changePasswordRequest.getOldPassword())){
+        } else if (!user.getPassword().equals(changePasswordRequest.getOldPassword())) {
             xLogger.info(Level.WARNING + " : password didnt match for userName : {}", changePasswordRequest.getUserName());
             BaseResponse baseResponse = new BaseResponse();
             baseResponse.setResponseMessage("Old Password is wrong");
             baseResponse.setResponseCode("89");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-        } else{
+        } else {
             xLogger.info(Level.INFO + " : changing the password for the UserName : {}", changePasswordRequest.getUserName());
             user.setPassword(changePasswordRequest.getNewPassword());
             BaseResponse baseResponse = new BaseResponse();
@@ -81,30 +80,30 @@ public class UserService {
     public ResponseEntity<Object> addUserService(User user) {
         BaseResponse baseResponse = new BaseResponse();
         if (userRepository.findAUser(user.getUserName()) == null) {
-            if(user.getAccessProjectNames() != null){
-                for(String projectName : user.getAccessProjectNames()){
+            if (user.getAccessProjectNames() != null) {
+                for (String projectName : user.getAccessProjectNames()) {
                     Project project = projectRepository.findAProject(projectName);
-                    if(project == null){
-                        xLogger.error(Level.WARNING +" : project doesnt exists with the name {}", projectName);
+                    if (project == null) {
+                        xLogger.error(Level.WARNING + " : project doesnt exists with the name {}", projectName);
                         baseResponse.setResponseCode("93");
                         baseResponse.setResponseMessage("project not found");
                         return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-                    } else{
+                    } else {
                         projectService.addUserToProject(user, project, ACCESS);
                     }
                 }
             }
 
-            if(user.getAdminProjectNames() != null){
-                for(String projectName : user.getAdminProjectNames()){
+            if (user.getAdminProjectNames() != null) {
+                for (String projectName : user.getAdminProjectNames()) {
                     Project project = projectRepository.findAProject(projectName);
-                    if(project == null){
-                        xLogger.error(Level.WARNING +" : Admin Project doesnt exists with the name {}", projectName);
+                    if (project == null) {
+                        xLogger.error(Level.WARNING + " : Admin Project doesnt exists with the name {}", projectName);
                         baseResponse.setResponseCode("93");
                         baseResponse.setResponseMessage("Admin project not found");
                         return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-                    } else{
-                        projectService.addUserToProject(user, project,ADMIN);
+                    } else {
+                        projectService.addUserToProject(user, project, ADMIN);
                     }
                 }
             }
@@ -132,30 +131,30 @@ public class UserService {
         }
         xLogger.info(Level.INFO + ": user found with UserName : {}", user1.getUserName());
 
-        if(user.getAccessProjectNames() != null){
-            for(String projectName : user.getAccessProjectNames()){
+        if (user.getAccessProjectNames() != null) {
+            for (String projectName : user.getAccessProjectNames()) {
                 Project project = projectRepository.findAProject(projectName);
-                if(project == null){
-                    xLogger.error(Level.WARNING +" : project doesnt exists with the name {}", projectName);
+                if (project == null) {
+                    xLogger.error(Level.WARNING + " : project doesnt exists with the name {}", projectName);
                     baseResponse.setResponseCode("93");
                     baseResponse.setResponseMessage("Access project not found");
                     return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-                } else{
+                } else {
                     projectService.addUserToProject(user, project, ACCESS);
                 }
             }
         }
 
-        if(user.getAdminProjectNames() != null){
-            for(String projectName : user.getAdminProjectNames()){
+        if (user.getAdminProjectNames() != null) {
+            for (String projectName : user.getAdminProjectNames()) {
                 Project project = projectRepository.findAProject(projectName);
-                if(project == null){
-                    xLogger.error(Level.WARNING +" : Project doesnt exists with the name {}", projectName);
+                if (project == null) {
+                    xLogger.error(Level.WARNING + " : Project doesnt exists with the name {}", projectName);
                     baseResponse.setResponseCode("93");
                     baseResponse.setResponseMessage("Admin project not found");
                     return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
-                } else{
-                    projectService.addUserToProject(user, project,ADMIN);
+                } else {
+                    projectService.addUserToProject(user, project, ADMIN);
                 }
             }
         }
@@ -166,7 +165,7 @@ public class UserService {
     }
 
 
-    public ResponseEntity<Object> deleteUser(DeleteUserRequest deleteUserRequest){
+    public ResponseEntity<Object> deleteUser(DeleteUserRequest deleteUserRequest) {
         xLogger.info(Level.INFO + " : deleting userName : {}", deleteUserRequest.getUserName());
 
         User user = userRepository.findAUser(deleteUserRequest.getUserName());
@@ -179,22 +178,22 @@ public class UserService {
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
 
-        if(!user.getPassword().equals(deleteUserRequest.getPassword())){
+        if (!user.getPassword().equals(deleteUserRequest.getPassword())) {
             xLogger.info(Level.WARNING + " : password didnt match for userName  : {}", deleteUserRequest.getUserName());
             baseResponse.setResponseMessage("Password is wrong");
             baseResponse.setResponseCode("89");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
 
-        if(user.getAdminProjectNames() != null){
+        if (user.getAdminProjectNames() != null) {
             xLogger.info(Level.WARNING + " : user still have alive admin projects  : {}", deleteUserRequest.getUserName());
             baseResponse.setResponseMessage("Admin Projects still there");
             baseResponse.setResponseCode("88");
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
-        if(user.getAccessProjectNames() != null){
-            for(String projectName : user.getAccessProjectNames()){
-                projectService.revokeProjectAccessService(new RevokeProjectAccessRequest(user.getUserName(), projectName ));
+        if (user.getAccessProjectNames() != null) {
+            for (String projectName : user.getAccessProjectNames()) {
+                projectService.revokeProjectAccessService(new RevokeProjectAccessRequest(user.getUserName(), projectName));
             }
         }
 
@@ -218,13 +217,13 @@ public class UserService {
             return new ResponseEntity<>(baseResponse, org.springframework.http.HttpStatus.BAD_REQUEST);
         }
         List<Project> projects = new ArrayList<>();
-        if(user.getAccessProjectNames() != null){
-            for(String projectName : user.getAccessProjectNames()){
+        if (user.getAccessProjectNames() != null) {
+            for (String projectName : user.getAccessProjectNames()) {
                 projects.add(projectRepository.findAProject(projectName));
             }
             xLogger.info(Level.INFO + " : projects for userName {} are {}", userName, projects);
             return new ResponseEntity<>(projects, HttpStatus.OK);
-        } else{
+        } else {
 
             baseResponse.setResponseMessage("No Projects the user have access to");
             baseResponse.setResponseCode("00");

@@ -2,7 +2,6 @@ package com.bcp.contentfree.request;
 
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;

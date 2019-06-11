@@ -3,7 +3,6 @@ package com.bcp.contentfree.request;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
