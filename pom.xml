@@ -105,12 +105,12 @@
             <version>4.3.9.RELEASE</version>
         </dependency>
 
-        <dependency>
+      <!--  <dependency>
             <groupId>org.apache.geronimo.ext.openejb</groupId>
             <artifactId>javaee-api</artifactId>
             <version>5.0.4-SNAPSHOT</version>
         </dependency>
-
+-->
         <!-- Swagger Dependencies -->
         <dependency>
             <groupId>io.springfox</groupId>
